@@ -12,20 +12,36 @@ export const getOpts = function ({ versionRange, command, args, opts }) {
 
   validateBasic({ versionRange, command, args: argsA, opts: optsA })
 
-  const { dry, progress, fetch, mirror, arch, ...execaOptions } = optsA
-  const optsB = { dry, progress, fetch, mirror, arch, cwd: execaOptions.cwd }
+  const { dry, progress, fetch, mirror, arch, sync, ...execaOptions } = optsA
+  const optsB = {
+    dry,
+    progress,
+    fetch,
+    mirror,
+    arch,
+    sync,
+    cwd: execaOptions.cwd,
+  }
 
   validate(optsB, { exampleConfig: EXAMPLE_OPTS })
 
   const optsC = filterObj(optsB, isDefined)
   const optsD = { ...DEFAULT_OPTS, ...optsC }
 
-  const { dry: dryA, getNodeOpts } = separateOpts(optsD)
-  return { args: argsA, dry: dryA, getNodeOpts, execaOptions }
+  const { dry: dryA, sync: syncA, getNodeOpts } = separateOpts(optsD)
+  return { args: argsA, dry: dryA, sync: syncA, getNodeOpts, execaOptions }
 }
 
-const separateOpts = function ({ dry, progress, fetch, mirror, arch, cwd }) {
-  return { dry, getNodeOpts: { progress, fetch, mirror, arch, cwd } }
+const separateOpts = function ({
+  dry,
+  progress,
+  fetch,
+  mirror,
+  arch,
+  cwd,
+  sync,
+}) {
+  return { dry, sync, getNodeOpts: { progress, fetch, mirror, arch, cwd } }
 }
 
 // `args` and `opts` are both optional
@@ -50,6 +66,7 @@ const DEFAULT_OPTS = {
   dry: false,
   // Passed to fetch-node-website
   progress: false,
+  sync: false,
 }
 
 const EXAMPLE_OPTS = {
